@@ -1,0 +1,1 @@
+const BASE_URL = 'http://anuncios.marcelmelo.com.br/';
