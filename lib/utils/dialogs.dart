@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shop_like_app_rest/widgets/custom_dialog.dart';
 
 class Dialogs {
-  static Future<void> showLoadingDialog(BuildContext context) {
-    return showDialog(
+  static Future<void> showLoadingDialog(BuildContext context) async{
+    return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -12,7 +12,7 @@ class Dialogs {
     );
   }
 
-  static Future<void> showErrorDialog(BuildContext context, String error) {
+  static Future<void> showErrorDialog(BuildContext context, String error) async{
     return showDialog(
       context: context,
       builder: (BuildContext context) {

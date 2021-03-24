@@ -19,7 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String _password = '';
 
-  void _submitForm(){
+  Future<void> _submitForm() async {
     bool isValid = _form.currentState.validate();
     if(!isValid){
       return;
@@ -27,14 +27,19 @@ class _SignupScreenState extends State<SignupScreen> {
     try {
       Dialogs.showLoadingDialog(context);
       final _advertApi = AdvertApi();
-      _advertApi.signup(
-            User(
-              name: _name,
-              phone: _phone,
-              password: _password,
-            )
-          );
-    } on DioError catch (e) {
+      var signup = await _advertApi.signup(
+          User(
+            name: _name,
+            phone: _phone,
+            password: _password,
+          )
+      );
+      Navigator.of(context, rootNavigator: true).pop();
+    } on Exception catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      Dialogs.showErrorDialog(context, e.toString());
+    } catch (e){
+      Navigator.of(context, rootNavigator: true).pop();
       Dialogs.showErrorDialog(context, e.toString());
     }
   }
