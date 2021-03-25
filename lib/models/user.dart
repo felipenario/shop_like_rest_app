@@ -21,4 +21,12 @@ class User {
     data['senha'] = this.password;
     return data;
   }
+
+  Map<String, dynamic> loginToJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['telefone'] = this.phone;
+    data['senha'] = this.password;
+    return data;
+  }
+
 }

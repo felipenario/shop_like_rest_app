@@ -1,43 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:shop_like_app_rest/models/user.dart';
+import 'package:shop_like_app_rest/models/advert.dart';
 import 'package:shop_like_app_rest/repository/adverts_api.dart';
+import 'package:shop_like_app_rest/repository/local_storage_hive.dart';
 import 'package:shop_like_app_rest/utils/dialogs.dart';
 
-class SignupScreen extends StatefulWidget {
-
+class AdvertFormScreen extends StatefulWidget {
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  _AdvertFormScreenState createState() => _AdvertFormScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
-  final _signupForm = GlobalKey<FormState>();
-  final MaskTextInputFormatter _phoneMask = MaskTextInputFormatter(mask: '(##) #####-####', filter: { "#": RegExp(r'[0-9]') });
+class _AdvertFormScreenState extends State<AdvertFormScreen> {
+  final _advertForm = GlobalKey<FormState>();
+  Advert _advert = Advert();
 
-  String _name = '';
-
-  String _phone = '';
-
-  String _password = '';
-
-  Future<void> _signup() async {
-    bool isValid = _signupForm.currentState.validate();
+  Future<void> _createAdvert() async {
+    bool isValid = _advertForm.currentState.validate();
     if(!isValid){
       return;
     }
-    _signupForm.currentState.save();
-    try {
+    _advertForm.currentState.save();
+    try{
       Dialogs.showLoadingDialog(context);
-      await AdvertApi.signup(
-          User(
-            name: _name,
-            phone: _phoneMask.getUnmaskedText(),
-            password: _password,
-          )
-      );
+      final token = await LocalStorageHive().getToken();
+      await AdvertApi.createAdvert(_advert, token);
       Navigator.of(context, rootNavigator: true).pop();
-      Dialogs.showSuccessDialog(context, 'Usuário criado com sucesso!');
-    } on Exception catch (e) {
+      Dialogs.showSuccessDialog(context, 'O anúncio foi criado com sucesso!');
+    }on Exception catch (e) {
       Navigator.of(context, rootNavigator: true).pop();
       Dialogs.showErrorDialog(context, e.toString());
     } catch (e){
@@ -50,29 +38,29 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fazer cadastro'),
+        title: Text('Adicionar Anúncio'),
       ),
       body: Container(
-        child: Form(
-          key: _signupForm,
+        child:  Form(
+          key: _advertForm,
           child: Column(
             children: [
               Material(
                 child: TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'Nome'
+                      labelText: 'Título'
                   ),
                   keyboardType: TextInputType.text,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
                     if(isEmpty){
-                      return 'Digite um nome';
+                      return 'Digite um título';
                     }
                     return null;
                   },
                   onSaved: (value){
                     setState(() {
-                      _name = value;
+                      _advert.title = value;
                     });
                   },
                 ),
@@ -80,20 +68,19 @@ class _SignupScreenState extends State<SignupScreen> {
               Material(
                 child: TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'Telefone'
+                      labelText: 'Descrição'
                   ),
-                  inputFormatters: [_phoneMask],
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.text,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
                     if(isEmpty){
-                      return 'Digite um telefone';
+                      return 'Digite uma descrição';
                     }
                     return null;
                   },
                   onSaved: (value){
                     setState(() {
-                      _phone = value;
+                      _advert.description = value;
                     });
                   },
                 ),
@@ -101,25 +88,25 @@ class _SignupScreenState extends State<SignupScreen> {
               Material(
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Senha'
+                      labelText: 'Preço'
                   ),
                   keyboardType: TextInputType.text,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
                     if(isEmpty){
-                      return 'Digite uma senha';
+                      return 'Digite um preço';
                     }
                     return null;
                   },
                   onSaved: (value){
                     setState(() {
-                      _password = value;
+                      _advert.price = int.parse(value);
                     });
                   },
                 ),
               ),
               TextButton(
-                onPressed: () => _signup(),
+                onPressed: () => _createAdvert(),
                 child: Text('Cadastrar'),
               )
             ],

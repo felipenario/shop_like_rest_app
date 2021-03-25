@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shop_like_app_rest/screens/advert_form_screen.dart';
 import 'package:shop_like_app_rest/screens/home_screen.dart';
+import 'package:shop_like_app_rest/screens/login_screen.dart';
 import 'package:shop_like_app_rest/screens/signup_screen.dart';
 import 'package:shop_like_app_rest/utils/app_routes.dart';
 
@@ -17,8 +19,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
+        AppRoutes.LOGIN_SCREEN: (ctx) => LoginScreen(),
+        AppRoutes.SIGNUP_SCREEN: (ctx) => SignupScreen(),
         AppRoutes.HOME_SCREEN: (ctx) => HomeScreen(),
-        AppRoutes.SIGNUP_SCREEN: (ctx) => SignupScreen()
+        AppRoutes.ADVERT_FORM_SCREEN: (ctx) => AdvertFormScreen()
       },
     );
   }
