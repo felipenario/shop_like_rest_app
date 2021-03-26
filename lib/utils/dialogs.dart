@@ -29,4 +29,13 @@ class Dialogs {
       },
     );
   }
+
+  static Future<bool> showConfirmDeleteDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomDialog.confirmDelete();
+      },
+    );
+  }
 }

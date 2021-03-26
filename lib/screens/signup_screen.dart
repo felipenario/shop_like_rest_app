@@ -50,14 +50,18 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
         title: Text('Fazer cadastro'),
       ),
       body: Container(
+        color: Theme.of(context).primaryColor,
         child: Form(
           key: _signupForm,
           child: Column(
             children: [
-              Material(
+              Container(
+                margin: const EdgeInsets.all(10),
                 child: TextFormField(
                   decoration: InputDecoration(
                       labelText: 'Nome'
@@ -77,7 +81,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
               ),
-              Material(
+              Container(
+                margin: const EdgeInsets.all(10),
                 child: TextFormField(
                   decoration: InputDecoration(
                       labelText: 'Telefone'
@@ -98,7 +103,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
               ),
-              Material(
+              Container(
+                margin: const EdgeInsets.all(10),
                 child: TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Senha'
@@ -118,9 +124,18 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
               ),
-              TextButton(
-                onPressed: () => _signup(),
-                child: Text('Cadastrar'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 100),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)
+                      ),
+                      primary: Theme.of(context).accentColor
+                  ),
+                  onPressed: () => _signup(),
+                  child: Text('Cadastrar', style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
               )
             ],
           ),

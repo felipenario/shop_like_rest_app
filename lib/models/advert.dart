@@ -1,16 +1,24 @@
+import 'package:shop_like_app_rest/models/user.dart';
+
 class Advert {
   int id;
   String title;
   String description;
   int price;
+  DateTime createdAt;
+  DateTime updatedAt;
+  User user;
 
-  Advert({this.id, this.title, this.description, this.price});
+  Advert({this.id, this.title, this.description, this.price, this.createdAt, this.updatedAt, this.user});
 
   Advert.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['titulo'];
     description = json['descricao'];
     price = json['preco'];
+    createdAt = DateTime.parse(json['createdAt']);
+    updatedAt = DateTime.parse(json['updatedAt']);
+    user = User.fromJson(json['usuario']);
   }
 
   Map<String, dynamic> toJson() {

@@ -1,6 +1,7 @@
 class AppRoutes {
-  static const LOGIN_SCREEN = '/';
+  static const SPLASH_SCREEN = '/';
+  static const LOGIN_SCREEN = '/login';
   static const SIGNUP_SCREEN = '/sign-up';
-  static const HOME_SCREEN = '/home-screen';
+  static const HOME_SCREEN = '/home';
   static const ADVERT_FORM_SCREEN = '/advert-form';
 }

@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       await LocalStorageHive().saveToken(token);
       Navigator.of(context, rootNavigator: true).pop();
-      Navigator.pushNamed(context, AppRoutes.HOME_SCREEN);
+      Navigator.pushReplacementNamed(context, AppRoutes.HOME_SCREEN);
     }on Exception catch (e) {
       Navigator.of(context, rootNavigator: true).pop();
       Dialogs.showErrorDialog(context, e.toString());
@@ -50,65 +50,80 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: Theme.of(context).primaryColor,
         child: Form(
           key: _loginForm,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FlutterLogo(
-                size: 200,
-              ),
-              Material(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                      labelText: 'Telefone'
-                  ),
-                  inputFormatters: [_phoneMask],
-                  keyboardType: TextInputType.phone,
-                  validator: (value){
-                    bool isEmpty = value.trim().isEmpty;
-                    if(isEmpty){
-                      return 'Digite um telefone';
-                    }
-                    return null;
-                  },
-                  onSaved: (value){
-                    setState(() {
-                      _phone = value;
-                    });
-                  },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlutterLogo(
+                  size: 200,
                 ),
-              ),
-              Material(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                      labelText: 'Senha'
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Telefone'
+                    ),
+                    inputFormatters: [_phoneMask],
+                    keyboardType: TextInputType.phone,
+                    validator: (value){
+                      bool isEmpty = value.trim().isEmpty;
+                      if(isEmpty){
+                        return 'Digite um telefone';
+                      }
+                      return null;
+                    },
+                    onSaved: (value){
+                      setState(() {
+                        _phone = value;
+                      });
+                    },
                   ),
-                  keyboardType: TextInputType.text,
-                  validator: (value){
-                    bool isEmpty = value.trim().isEmpty;
-                    if(isEmpty){
-                      return 'Digite uma senha';
-                    }
-                    return null;
-                  },
-                  onSaved: (value){
-                    setState(() {
-                      _password = value;
-                    });
-                  },
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () => _login(),
-                child: Text('Login'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.SIGNUP_SCREEN),
-                child: Text('Cadastrar'),
-              )
-            ],
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Senha'
+                    ),
+                    keyboardType: TextInputType.text,
+                    validator: (value){
+                      bool isEmpty = value.trim().isEmpty;
+                      if(isEmpty){
+                        return 'Digite uma senha';
+                      }
+                      return null;
+                    },
+                    onSaved: (value){
+                      setState(() {
+                        _password = value;
+                      });
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 50, right: 50),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)
+                        ),
+                        primary: Theme.of(context).accentColor
+                    ),
+                    onPressed: () => _login(),
+                    child: Text('Login'),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.SIGNUP_SCREEN),
+                  child: Text('Cadastrar', style: TextStyle(fontWeight: FontWeight.w700)),
+                )
+              ],
+            ),
           ),
         ),
       ),

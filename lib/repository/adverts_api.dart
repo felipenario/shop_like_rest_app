@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:shop_like_app_rest/models/advert.dart';
 import 'package:shop_like_app_rest/models/user.dart';
+import 'package:shop_like_app_rest/repository/local_storage_hive.dart';
 import 'package:shop_like_app_rest/utils/constants.dart';
 
 class AdvertApi {
@@ -12,6 +11,8 @@ class AdvertApi {
   ));
 
   static final AdvertApi _advertApi = AdvertApi._internal();
+
+  static final LocalStorageHive _localStorageHive = LocalStorageHive();
 
   factory AdvertApi(){
     return _advertApi;
@@ -55,14 +56,15 @@ class AdvertApi {
     }
   }
 
-  static Future<List<Advert>> getAdverts(String token) async {
+  static Future<List<Advert>> getAdverts() async {
     try {
+      var token = await _localStorageHive.getToken();
       var response = await _dio.get('anuncios/', options: Options(headers: {'authorization': 'Bearer ${token}'}));
       List<Advert> adverts = [];
       for(var advert in response.data) {
         adverts.add(Advert.fromJson(advert));
       }
-      print(adverts[0].title);
+      return adverts;
     } on DioError catch (e) {
       if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
           DioErrorType.CONNECT_TIMEOUT == e.type) {
@@ -77,8 +79,9 @@ class AdvertApi {
     }
   }
 
-  static Future<void> createAdvert(Advert advert, String token) async {
+  static Future<void> createAdvert(Advert advert) async {
     try {
+      var token = await _localStorageHive.getToken();
       var response = await _dio.post('anuncios/', data: advert.toJson(), options: Options(headers: {'authorization': 'Bearer ${token}'}));
     } on DioError catch (e) {
       if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
@@ -86,7 +89,79 @@ class AdvertApi {
         throw ('Não foi possível estabelecer conexão com o backend');
       } else if (DioErrorType.RESPONSE == e.type) {
         if (e.response.statusCode == 500) {
-          print(e.response.data);
+          throw ('Erro ao executar a operação');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<void> editAdvert(Advert advert) async {
+   try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.put('anuncios/', data: advert.toJson(), options: Options(headers: {'authorization': 'Bearer ${token}'}));
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
+          throw ('Erro ao executar a operação');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<void> deleteAdvert(int advertId) async {
+   try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.delete('anuncios/${advertId}', options: Options(headers: {'authorization': 'Bearer ${token}'}));
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
+          throw ('Erro ao executar a operação');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<User> getLoggedUser() async {
+    try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.get('usuario/', options: Options(headers: {'authorization': 'Bearer ${token}'}));
+      return User.fromJson(response.data);
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
+          throw ('Erro ao executar a operação');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<void> logout() async {
+    try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.post('logout/', options: Options(headers: {'authorization': 'Bearer ${token}'}));
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
         }
       } else if (DioErrorType.DEFAULT == e.type) {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +18,7 @@ class LocalStorageHive {
   }
 
   _init() async {
+    var path = Directory.current.path;
     var dir = await getApplicationDocumentsDirectory();
     Hive.init(dir.path);
     var box = await Hive.openBox('db');
@@ -31,5 +33,10 @@ class LocalStorageHive {
   Future<String> getToken() async{
     var box = await _instance.future;
     return box.get('token');
+  }
+
+  Future<void> deleteToken() async {
+    var box = await _instance.future;
+    return box.delete('token');
   }
 }
