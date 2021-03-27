@@ -4,7 +4,7 @@ class Advert {
   int id;
   String title;
   String description;
-  int price;
+  double price;
   DateTime createdAt;
   DateTime updatedAt;
   User user;
@@ -15,7 +15,7 @@ class Advert {
     id = json['id'];
     title = json['titulo'];
     description = json['descricao'];
-    price = json['preco'];
+    price = (json['preco']).toDouble();
     createdAt = DateTime.parse(json['createdAt']);
     updatedAt = DateTime.parse(json['updatedAt']);
     user = User.fromJson(json['usuario']);

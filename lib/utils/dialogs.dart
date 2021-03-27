@@ -30,11 +30,20 @@ class Dialogs {
     );
   }
 
-  static Future<bool> showConfirmDeleteDialog(BuildContext context) {
+  static Future<bool> showConfirmDeleteAdvertDialog(BuildContext context) {
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return CustomDialog.confirmDelete();
+        return CustomDialog.confirmAdvertDelete();
+      },
+    );
+  }
+
+  static Future<bool> showConfirmDeleteUserDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomDialog.confirmUserDelete();
       },
     );
   }

@@ -4,7 +4,10 @@ class DismissibleDelete extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.red,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Align(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,

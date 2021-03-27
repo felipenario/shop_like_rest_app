@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:shop_like_app_rest/models/advert.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:shop_like_app_rest/models/user.dart';
 import 'package:shop_like_app_rest/repository/adverts_api.dart';
 import 'package:shop_like_app_rest/repository/local_storage_hive.dart';
+import 'package:shop_like_app_rest/utils/app_routes.dart';
 import 'package:shop_like_app_rest/utils/dialogs.dart';
 
-class AdvertFormScreen extends StatefulWidget {
-  final Advert advert;
+class ProfileScreen extends StatefulWidget {
+  final User user;
+  final Function() refreshUser;
 
-  AdvertFormScreen({this.advert});
 
+  ProfileScreen({this.user, this.refreshUser});
   @override
-  _AdvertFormScreenState createState() => _AdvertFormScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _AdvertFormScreenState extends State<AdvertFormScreen> {
-  final _advertForm = GlobalKey<FormState>();
-  Advert _advert = Advert();
-  bool isEditing = false;
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _profileForm = GlobalKey<FormState>();
 
-  Future<void> _createAdvert() async {
-    bool isValid = _advertForm.currentState.validate();
+  final MaskTextInputFormatter _phoneMask = MaskTextInputFormatter(mask: '(##) #####-####', filter: { "#": RegExp(r'[0-9]') });
+
+  User _user = User();
+
+  Future<void> _editUser() async {
+    bool isValid = _profileForm.currentState.validate();
     if(!isValid){
       return;
     }
-    _advertForm.currentState.save();
-    try{
+    _profileForm.currentState.save();
+    try {
       Dialogs.showLoadingDialog(context);
-      final token = await LocalStorageHive().getToken();
-      await AdvertApi.createAdvert(_advert);
+      await AdvertApi.editUser(_user);
+      widget.refreshUser();
       Navigator.of(context, rootNavigator: true).pop();
-      Dialogs.showSuccessDialog(context, 'O anúncio foi criado com sucesso!');
-    }on Exception catch (e) {
+      Dialogs.showSuccessDialog(context, 'Usuário editado com sucesso!');
+    } on Exception catch (e) {
       Navigator.of(context, rootNavigator: true).pop();
       Dialogs.showErrorDialog(context, e.toString());
     } catch (e){
@@ -39,20 +44,18 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
     }
   }
 
-  Future<void> _editAdvert() async {
-    bool isValid = _advertForm.currentState.validate();
-    if(!isValid){
-      return;
+  Future<void> _deleteUser() async {
+    final bool delete = await Dialogs.showConfirmDeleteUserDialog(context);
+    if(!delete){
+       return;
     }
-    _advertForm.currentState.save();
-    _advert.id = widget.advert.id;
-    try{
+    try {
       Dialogs.showLoadingDialog(context);
-      final token = await LocalStorageHive().getToken();
-      await AdvertApi.editAdvert(_advert);
+      await AdvertApi.deleteUser(widget.user);
+      await LocalStorageHive().deleteToken();
       Navigator.of(context, rootNavigator: true).pop();
-      Dialogs.showSuccessDialog(context, 'O anúncio foi editado com sucesso!');
-    }on Exception catch (e) {
+      Navigator.pushReplacementNamed(context, AppRoutes.LOGIN_SCREEN);
+    } on Exception catch (e) {
       Navigator.of(context, rootNavigator: true).pop();
       Dialogs.showErrorDialog(context, e.toString());
     } catch (e){
@@ -60,15 +63,6 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
       Dialogs.showErrorDialog(context, e.toString());
     }
   }
-
-  @override
-  void initState() {
-    if(widget.advert != null){
-      isEditing = true;
-    }
-    super.initState();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,33 +70,48 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text(isEditing ? 'Editar Anúncio' :'Adicionar Anúncio'),
+        title: Text('Fazer cadastro'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete_forever),
+            onPressed: (){
+              _deleteUser();
+          },
+          )
+        ],
       ),
       body: Container(
         color: Theme.of(context).primaryColor,
-        child:  Form(
-          key: _advertForm,
+        child: Form(
+          key: _profileForm,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).accentColor,
+                  child: Icon(Icons.person, size: 50, color: Colors.white),
+                  radius: 40,
+                ),
+              ),
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextFormField(
-                  initialValue: isEditing ? widget.advert.title : null,
+                  initialValue: widget.user.name,
                   decoration: InputDecoration(
-                      labelText: 'Título'
+                      labelText: 'Nome'
                   ),
                   keyboardType: TextInputType.text,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
                     if(isEmpty){
-                      return 'Digite um título';
+                      return 'Digite um nome';
                     }
                     return null;
                   },
                   onSaved: (value){
                     setState(() {
-                      _advert.title = value;
+                      _user.name = value;
                     });
                   },
                 ),
@@ -110,21 +119,22 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextFormField(
-                  initialValue: isEditing ? widget.advert.description : null,
+                  initialValue: _phoneMask.maskText(widget.user.phone),
                   decoration: InputDecoration(
-                      labelText: 'Descrição'
+                      labelText: 'Telefone'
                   ),
-                  keyboardType: TextInputType.text,
+                  inputFormatters: [_phoneMask],
+                  keyboardType: TextInputType.phone,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
                     if(isEmpty){
-                      return 'Digite uma descrição';
+                      return 'Digite um telefone';
                     }
                     return null;
                   },
                   onSaved: (value){
                     setState(() {
-                      _advert.description = value;
+                      _user.phone = _phoneMask.unmaskText(value);
                     });
                   },
                 ),
@@ -132,26 +142,20 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextFormField(
-                  initialValue: isEditing ? widget.advert.price.toStringAsFixed(3) : null,
                   decoration: InputDecoration(
-                      labelText: 'Preço'
+                      labelText: 'Senha'
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: TextInputType.text,
                   validator: (value){
                     bool isEmpty = value.trim().isEmpty;
-                    var newValue = value.replaceAll(',', '.');
-                    var newPrice = double.tryParse(newValue);
-                    bool isInvalid = newPrice == null || newPrice <= 0;
-                    if (isEmpty || isInvalid) {
-                      return 'Informe um preço válido!';
+                    if(isEmpty){
+                      return 'Digite uma senha';
                     }
                     return null;
                   },
                   onSaved: (value){
-                    var newValue = value.replaceAll(',', '.');
-                    var newPrice = double.tryParse(newValue);
                     setState(() {
-                      _advert.price = newPrice;
+                      _user.password = value;
                     });
                   },
                 ),
@@ -160,13 +164,13 @@ class _AdvertFormScreenState extends State<AdvertFormScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 100),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    primary: Theme.of(context).accentColor
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)
+                      ),
+                      primary: Theme.of(context).accentColor
                   ),
-                  onPressed: () => isEditing ? _editAdvert() : _createAdvert(),
-                  child: Text(isEditing ? 'Editar' : 'Cadastrar', style: TextStyle(fontWeight: FontWeight.w700)),
+                  onPressed: () => _editUser(),
+                  child: Text('Editar usuário', style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
               )
             ],

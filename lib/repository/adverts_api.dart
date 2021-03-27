@@ -31,6 +31,9 @@ class AdvertApi {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
         }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
       }
@@ -49,6 +52,9 @@ class AdvertApi {
       } else if (DioErrorType.RESPONSE == e.type) {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
@@ -73,6 +79,9 @@ class AdvertApi {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
         }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
       }
@@ -90,6 +99,9 @@ class AdvertApi {
       } else if (DioErrorType.RESPONSE == e.type) {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
@@ -109,6 +121,9 @@ class AdvertApi {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
         }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
       }
@@ -126,6 +141,9 @@ class AdvertApi {
       } else if (DioErrorType.RESPONSE == e.type) {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
@@ -146,6 +164,9 @@ class AdvertApi {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
         }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());
       }
@@ -163,6 +184,52 @@ class AdvertApi {
       } else if (DioErrorType.RESPONSE == e.type) {
         if (e.response.statusCode == 500) {
           throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<void> editUser(User user) async {
+    try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.put('usuario/', data: user.toJson(), options: Options(headers: {'authorization': 'Bearer ${token}'}));
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
+          throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
+        }
+      } else if (DioErrorType.DEFAULT == e.type) {
+        throw (e.error.toString());
+      }
+    }
+  }
+
+  static Future<void> deleteUser(User user) async {
+    print(user.id);
+    try {
+      var token = await _localStorageHive.getToken();
+      var response = await _dio.delete('usuario/', queryParameters: {'id': user.id}, options: Options(headers: {'authorization': 'Bearer ${token}'}));
+    } on DioError catch (e) {
+      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+          DioErrorType.CONNECT_TIMEOUT == e.type) {
+        throw ('Não foi possível estabelecer conexão com o backend');
+      } else if (DioErrorType.RESPONSE == e.type) {
+        if (e.response.statusCode == 500) {
+          throw ('Erro ao executar a operação');
+        }
+        if(e.response.statusCode == 404){
+          throw ('URL requisitada não encontrada');
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         throw (e.error.toString());

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shop_like_app_rest/models/user.dart';
@@ -16,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final MaskTextInputFormatter _phoneMask = MaskTextInputFormatter(mask: '(##) #####-####', filter: { "#": RegExp(r'[0-9]') });
   final _loginForm = GlobalKey<FormState>();
 
+  bool _isVisible = false;
   String _phone = '';
   String _password = '';
 
@@ -59,8 +59,11 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlutterLogo(
-                  size: 200,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: FlutterLogo(
+                    size: 200,
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 10),
@@ -88,9 +91,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   margin: const EdgeInsets.only(top: 10),
                   child: TextFormField(
                     decoration: InputDecoration(
-                        labelText: 'Senha'
+                        labelText: 'Senha',
+                        suffixIcon: IconButton(icon: Icon(_isVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white),
+                            onPressed: (){
+                            setState(() {
+                              _isVisible = !_isVisible;
+                            });
+                        },
+                        )
                     ),
                     keyboardType: TextInputType.text,
+                    obscureText: !_isVisible,
                     validator: (value){
                       bool isEmpty = value.trim().isEmpty;
                       if(isEmpty){

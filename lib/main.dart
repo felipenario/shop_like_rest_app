@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_like_app_rest/screens/advert_form_screen.dart';
 import 'package:shop_like_app_rest/screens/home_screen.dart';
 import 'package:shop_like_app_rest/screens/login_screen.dart';
+import 'package:shop_like_app_rest/screens/profile_screen.dart';
 import 'package:shop_like_app_rest/screens/signup_screen.dart';
 import 'package:shop_like_app_rest/screens/splash_screen.dart';
 import 'package:shop_like_app_rest/utils/app_routes.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Color(0xff1c2845),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           labelStyle: TextStyle(
               color: Colors.white,
           ),
@@ -50,7 +52,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.LOGIN_SCREEN: (ctx) => LoginScreen(),
         AppRoutes.SIGNUP_SCREEN: (ctx) => SignupScreen(),
         AppRoutes.HOME_SCREEN: (ctx) => HomeScreen(),
-        AppRoutes.ADVERT_FORM_SCREEN: (ctx) => AdvertFormScreen()
+        AppRoutes.ADVERT_FORM_SCREEN: (ctx) => AdvertFormScreen(),
+        AppRoutes.PROFILE_SCREEN: (ctx) => ProfileScreen()
       },
     );
   }

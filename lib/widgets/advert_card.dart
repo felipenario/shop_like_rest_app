@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_like_app_rest/models/advert.dart';
 import 'package:shop_like_app_rest/screens/advert_form_screen.dart';
 import 'package:shop_like_app_rest/utils/app_routes.dart';
@@ -10,9 +11,9 @@ class AdvertCard extends StatelessWidget {
 
   final Advert advert;
   final Function(Advert) onDelete;
-  final Function() refreshOnEdit;
+  final Function() refreshAdverts;
 
-  AdvertCard({this.advert, this.onDelete, this.refreshOnEdit});
+  AdvertCard({this.advert, this.onDelete, this.refreshAdverts});
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +32,11 @@ class AdvertCard extends StatelessWidget {
                   builder: (ctx) => AdvertFormScreen(advert: advert),
                 )
             ).then((_) => {
-              refreshOnEdit()
+              refreshAdverts()
             });
             return false;
           }else{
-            final bool delete = await Dialogs.showConfirmDeleteDialog(context);
+            final bool delete = await Dialogs.showConfirmDeleteAdvertDialog(context);
             if(delete){
               onDelete(advert);
             }
@@ -43,6 +44,7 @@ class AdvertCard extends StatelessWidget {
           }
         },
         child: Material(
+          elevation: 5,
           color: Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -96,12 +98,12 @@ class AdvertCard extends StatelessWidget {
                               end: Alignment.bottomRight,
                             )
                         ),
-                        child: Center(child: Text('R\$${advert.price.toDouble().toStringAsFixed(2)}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
+                        child: Center(child: Text('R\$${advert.price.toString()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
                       ),
                     ),
                   ),
                 ),
-                Container(
+                Divider(
                   height: 0.5,
                   color: Color(0xff384363),
                 ),
@@ -120,7 +122,7 @@ class AdvertCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(advert.user.name, style: TextStyle(color: Colors.white)),
-                          Text(advert.createdAt.toLocal().toString(), style: TextStyle(color: Colors.white))
+                          Text('${DateFormat('dd/MM/yyy').format(advert.createdAt)} às ${DateFormat('hh:mm').format(advert.createdAt)}', style: TextStyle(color: Colors.white))
                         ],
                       ),
                     ),

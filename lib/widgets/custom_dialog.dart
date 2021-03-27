@@ -34,9 +34,16 @@ class CustomDialog extends StatelessWidget {
     this.isDeletingType = false,
   });
 
-  CustomDialog.confirmDelete({
+  CustomDialog.confirmAdvertDelete({
     this.title = 'Tem certeza que deseja deletar esse anúncio?',
     this.content = 'O anuncio depois de deletado não pode ser restaurado!',
+    this.isLoadingType = false,
+    this.isDeletingType = true,
+  });
+
+  CustomDialog.confirmUserDelete({
+    this.title = 'Tem certeza que deseja deletar este usuário?',
+    this.content = 'O usuário depois de deletado não pode ser restaurado!',
     this.isLoadingType = false,
     this.isDeletingType = true,
   });
@@ -54,7 +61,7 @@ class CustomDialog extends StatelessWidget {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 10),
-                  Text('Carregando', style: TextStyle(color: Colors.white),)
+                  Text('Carregando', style: TextStyle(color: Colors.white))
                 ],
               ),
             )
@@ -64,8 +71,8 @@ class CustomDialog extends StatelessWidget {
     }else{
       return AlertDialog(
         backgroundColor: Theme.of(context).primaryColor,
-        title: Text(title),
-        content: Text(content),
+        title: Text(title, style: TextStyle(color: Colors.white)),
+        content: Text(content, style: TextStyle(color: Colors.white)),
         actions: isDeletingType ? [
           TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text('Fechar', style: TextStyle(color: Colors.white))),
           TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text('Deletar', style: TextStyle(color: Colors.white))),

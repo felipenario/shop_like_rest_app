@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:shop_like_app_rest/models/user.dart';
 import 'package:shop_like_app_rest/repository/adverts_api.dart';
 import 'package:shop_like_app_rest/repository/local_storage_hive.dart';
+import 'package:shop_like_app_rest/screens/profile_screen.dart';
 import 'package:shop_like_app_rest/utils/app_routes.dart';
 import 'package:shop_like_app_rest/utils/dialogs.dart';
 
 class CustomDrawer extends StatelessWidget {
+
+  final User user;
+
+  final Function() refreshUser;
+
+  final MaskTextInputFormatter _phoneTextFormatter = MaskTextInputFormatter(mask: '(##) #####-####', filter: { "#": RegExp(r'[0-9]') });
+
+  CustomDrawer({this.user, this.refreshUser});
 
   Future<void> _logout(BuildContext context) async{
     try{
@@ -28,17 +39,19 @@ class CustomDrawer extends StatelessWidget {
       child: Container(
         color: Theme.of(context).primaryColor,
         child: ListView(
-          padding: const EdgeInsets.all(0),
           children: [
             DrawerHeader(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   CircleAvatar(
                     backgroundColor: Theme.of(context).primaryColor,
                     child: Icon(Icons.person, size: 50, color: Colors.white),
                     radius: 40,
                   ),
+                  Text(user.name, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  Text(_phoneTextFormatter.maskText(user.phone), style: TextStyle(color: Colors.white))
                 ],
               ),
               decoration: BoxDecoration(
@@ -48,6 +61,20 @@ class CustomDrawer extends StatelessWidget {
                     end: Alignment.bottomRight,
                   )
               ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person, color: Colors.white),
+              title: Text('Gerenciar usuário', style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    settings: RouteSettings(name: AppRoutes.PROFILE_SCREEN),
+                    builder: (ctx) => ProfileScreen(user: user, refreshUser: refreshUser),
+                  )
+              ),
+            ),
+            Divider(
+              color: Color(0xff384363),
             ),
             ListTile(
               leading: Icon(Icons.logout, color: Colors.white),
